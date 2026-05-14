@@ -6,13 +6,24 @@ Pantri helps households track their kitchen inventory, automatically monitor low
 
 ---
 
-## 🌟 Key Features
+## 🌟 Key Features & Core Pantry Flow
 
-- **Smart Inventory Tracking**: Filter inventory items by specific categories (Grains, Produce, Dairy, etc.) and update quantities in real-time.
-- **Automated Shopping Lists**: Items hitting configurable threshold limits instantly populate the automated smart shopping list.
+- **Smart Inventory Tracking**: Filter inventory items by specific categories (**Rice & Grains, Spices, Oils, Snacks, Beverages, Vegetables, Cleaning, Misc**) and update quantities in real-time.
+- **Stock Status Management**: Mark and track items as **Enough**, **Low**, or **Finished** instantly using dedicated accessible StatusChips. Includes recurring item tracking flags.
+- **Live Search & Status Filtering**: Real-time multi-criteria filtering supports searching by text query and segmenting displays by stock deficit statuses.
+- **Automated Shopping Lists**: Items transitioning to **Low** or **Finished** stock status automatically trigger seamless addition to the active shopping trip planner.
+- **Duplicate Prevention**: State engine guarantees zero duplicate shopping list entries occur during dynamic additions.
+- **Local Persistence caching**: Leverages robust local disk cache (`shared_preferences`) ensuring offline state preservation across user app sessions.
 - **Elder-Friendly UI Design**: Engineered with high contrast text, easily legible typography scales, and accessible minimum touch targets (≥48dp).
-- **Multilingual Support Ready**: Setup built to easily toggle app localizations seamlessly.
-- **Firebase Setup Prepared**: Pre-configured data structures designed to stream real-time sync across household family members using Cloud Firestore.
+
+---
+
+## 🏛️ Architecture Notes & Decisions
+
+- **Layered Feature-Driven Segregation**: Application capabilities map cleanly into independent top-level feature containers isolating data layers from UI layout elements.
+- **Repository Pattern Mediation**: Dedicated `PantryRepository` abstracts low-level reads/writes from the underlying client storage engines, supporting easy testability and clean swapping for Cloud Firestore streams.
+- **Reactive State Flow (Riverpod 2.x)**: Uses `AsyncNotifier` paradigms to systematically expose loading, error, and fully loaded state variants cleanly to UI widgets. Computed providers join parameters like search string filters dynamically without modifying source lists.
+- **Immutability First**: State records are modified purely via immutable functional transformations (`copyWith`) avoiding unpredictable side-effects.
 
 ---
 
@@ -34,9 +45,9 @@ lib/
  │   └── shopping/        # Dynamic automated grocery generation views
  │
  ├── shared/
- │   ├── models/          # Immutable entities (PantryItem) serialized for Firestore integration
- │   ├── services/        # 3rd-party facade access definitions (FirebaseService)
- │   └── widgets/         # Reusable structural components (BottomNavigationScaffold)
+ │   ├── models/          # Immutable entities (PantryItem) serialized for persistence
+ │   ├── services/        # 3rd-party facade access definitions
+ │   └── widgets/         # Reusable structural components (EmptyStateWidget)
  │
  └── main.dart            # Root provider bindings and app lifecycle initialization
 ```
@@ -74,13 +85,11 @@ lib/
 
 ---
 
-## 🔥 Future Firebase Integration Roadmap
+## 🔥 Next Development Steps & Integration Roadmap
 
-Production setups implementing remote sync functionality follow these designated hooks:
-
-1. **Initialization Hook**:
-   Uncomment `await Firebase.initializeApp();` setup directives located inside `lib/main.dart` and `lib/shared/services/firebase_service.dart`.
-2. **Cloud Firestore Stream Replacements**:
-   Substitute current static memory lists managed by Riverpod's `PantryNotifier` inside `lib/features/pantry/domain/pantry_provider.dart` with realtime subscription snapshots leveraging `FirebaseFirestore.instance.collection('households')`.
-3. **Authentication Flows**:
-   Attach valid sign-in actions inside `lib/features/auth/presentation/auth_screen.dart` to control access layers securely.
+1. **Firebase Real-Time Streams Integration**:
+   Substitute current local repository implementations with distributed Firebase Firestore streams to enable seamless live sync across separate family devices.
+2. **User Authentication Module Integration**:
+   Hook up real credential management inside `auth_screen.dart` to securely bind separate pantries to validated family accounts.
+3. **Background Push Notifications**:
+   Attach localized smart alerts to remind users of soon-to-expire items or pending low stock thresholds proactively.

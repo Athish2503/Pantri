@@ -1,75 +1,151 @@
 import 'package:flutter/material.dart';
-
-// ARCHITECTURE DECISION: Encapsulating light and dark theme configurations using Material 3 ThemeData.
-// Primary goal includes an elder-friendly UI design: clear contrast, larger standard typography, 
-// and a soothing green palette appropriate for a kitchen/pantry utility context.
+import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
-  // A clean, fresh green base suitable for food/pantry tracking
-  static const Color primaryColor = Color(0xFF2E7D32); // Material Green 800
-  static const Color secondaryColor = Color(0xFF81C784); // Material Green 300
-  static const Color accentColor = Color(0xFFFFB300); // Amber for low stock alerts
-  static const Color surfaceColor = Color(0xFFF1F8E9); // Light green-tinted white for soft contrast
+  // Premium Color Palette
+  static const Color primaryEmerald = Color(0xFF10B981); // Emerald 500
+  static const Color primaryDark = Color(0xFF065F46);    // Emerald 800
+  static const Color accentAmber = Color(0xFFF59E0B);    // Amber 500
+  
+  static const Color lightBg = Color(0xFFF9FAFB);        // Gray 50
+  static const Color darkBg = Color(0xFF111827);         // Gray 900
+  
+  static const Color surfaceLight = Colors.white;
+  static const Color surfaceDark = Color(0xFF1F2937);    // Gray 800
+
+  // Backward compatibility aliases
+  static const Color primaryColor = primaryEmerald;
+  static const Color secondaryColor = primaryDark;
+  static const Color accentColor = accentAmber;
+  static const Color surfaceColor = lightBg;
 
   static ThemeData get lightTheme {
     return ThemeData(
       useMaterial3: true,
+      brightness: Brightness.light,
       colorScheme: ColorScheme.fromSeed(
-        seedColor: primaryColor,
-        primary: primaryColor,
-        secondary: secondaryColor,
-        surface: Colors.white,
-        onSurface: const Color(0xFF1B5E20), // High contrast dark green/black for readability
+        seedColor: primaryEmerald,
+        primary: primaryEmerald,
+        secondary: primaryDark,
+        surface: lightBg,
+        onSurface: const Color(0xFF111827),
       ),
-      // Elder-friendly text scaling and contrast
-      textTheme: const TextTheme(
-        headlineMedium: TextStyle(
-          fontSize: 28,
+      textTheme: GoogleFonts.interTextTheme(ThemeData.light().textTheme).copyWith(
+        displayLarge: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: const Color(0xFF111827)),
+        headlineMedium: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: const Color(0xFF111827)),
+        titleLarge: GoogleFonts.outfit(fontWeight: FontWeight.w600, color: const Color(0xFF111827)),
+      ),
+      appBarTheme: AppBarTheme(
+        centerTitle: false,
+        backgroundColor: lightBg,
+        foregroundColor: const Color(0xFF111827),
+        elevation: 0,
+        titleTextStyle: GoogleFonts.outfit(
+          fontSize: 24,
           fontWeight: FontWeight.bold,
-          color: Color(0xFF1B5E20),
-        ),
-        titleLarge: TextStyle(
-          fontSize: 22,
-          fontWeight: FontWeight.w600,
-          color: Color(0xFF1B5E20),
-        ),
-        titleMedium: TextStyle(
-          fontSize: 18,
-          fontWeight: FontWeight.w500,
-          color: Colors.black87,
-        ),
-        bodyLarge: TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.normal,
-          color: Colors.black87,
-        ),
-        bodyMedium: TextStyle(
-          fontSize: 14,
-          color: Colors.black87,
+          color: const Color(0xFF111827),
         ),
       ),
-      cardTheme: CardTheme(
-        elevation: 2,
+      cardTheme: CardThemeData(
+        elevation: 0,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(20),
+          side: BorderSide(color: Colors.grey.withOpacity(0.1)),
         ),
-        color: surfaceColor,
+        color: surfaceLight,
       ),
-      floatingActionButtonTheme: const FloatingActionButtonThemeData(
-        backgroundColor: primaryColor,
-        foregroundColor: Colors.white,
-        elevation: 4,
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: primaryEmerald,
+          foregroundColor: Colors.white,
+          elevation: 0,
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+          textStyle: GoogleFonts.inter(fontWeight: FontWeight.bold, fontSize: 16),
+        ),
       ),
-      appBarTheme: const AppBarTheme(
-        centerTitle: true,
-        backgroundColor: primaryColor,
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: Colors.white,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: BorderSide(color: Colors.grey.shade200),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: BorderSide(color: Colors.grey.shade200),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: BorderSide(color: primaryEmerald, width: 2),
+        ),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+      ),
+    );
+  }
+
+  static ThemeData get darkTheme {
+    return ThemeData(
+      useMaterial3: true,
+      brightness: Brightness.dark,
+      colorScheme: ColorScheme.fromSeed(
+        brightness: Brightness.dark,
+        seedColor: primaryEmerald,
+        primary: primaryEmerald,
+        secondary: primaryEmerald.withOpacity(0.8),
+        surface: darkBg,
+        onSurface: Colors.white,
+      ),
+      textTheme: GoogleFonts.interTextTheme(ThemeData.dark().textTheme).copyWith(
+        displayLarge: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: Colors.white),
+        headlineMedium: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: Colors.white),
+        titleLarge: GoogleFonts.outfit(fontWeight: FontWeight.w600, color: Colors.white),
+      ),
+      appBarTheme: AppBarTheme(
+        centerTitle: false,
+        backgroundColor: darkBg,
         foregroundColor: Colors.white,
         elevation: 0,
-        titleTextStyle: TextStyle(
-          fontSize: 22,
+        titleTextStyle: GoogleFonts.outfit(
+          fontSize: 24,
           fontWeight: FontWeight.bold,
           color: Colors.white,
         ),
+      ),
+      cardTheme: CardThemeData(
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+          side: BorderSide(color: Colors.white.withOpacity(0.05)),
+        ),
+        color: surfaceDark,
+      ),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: primaryEmerald,
+          foregroundColor: Colors.white,
+          elevation: 0,
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+          textStyle: GoogleFonts.inter(fontWeight: FontWeight.bold, fontSize: 16),
+        ),
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: surfaceDark,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: BorderSide(color: Colors.white.withOpacity(0.1)),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: BorderSide(color: Colors.white.withOpacity(0.1)),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: BorderSide(color: primaryEmerald, width: 2),
+        ),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
       ),
     );
   }

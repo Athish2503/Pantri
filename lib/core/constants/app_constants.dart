@@ -17,12 +17,14 @@ class AppConstants {
   // Pantry item default categories
   static const List<String> categories = [
     'All',
-    'Grains & Pasta',
-    'Canned Goods',
-    'Dairy',
-    'Produce',
-    'Spices & Condiments',
+    'Rice & Grains',
+    'Spices',
+    'Oils',
     'Snacks',
+    'Beverages',
+    'Vegetables',
+    'Cleaning',
+    'Misc',
   ];
 
   // Common units of measurement

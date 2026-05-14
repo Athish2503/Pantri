@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 import '../../core/theme/app_theme.dart';
-
-// ARCHITECTURE DECISION: Reusable Scaffold handling root tab navigation via go_router's StatefulNavigationShell.
-// Retains widget state across tabs so users don't lose scroll positions or unsaved entries.
-// Elder-friendly UI goal: Always shows explicit text labels below distinct, easy-to-tap icons.
 
 class BottomNavigationScaffold extends StatelessWidget {
   final StatefulNavigationShell navigationShell;
@@ -16,6 +13,8 @@ class BottomNavigationScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    
     return Scaffold(
       body: navigationShell,
       bottomNavigationBar: NavigationBar(
@@ -23,32 +22,32 @@ class BottomNavigationScaffold extends StatelessWidget {
         onDestinationSelected: (index) {
           navigationShell.goBranch(
             index,
-            // Supporting quick return to root when re-tapping active tab
             initialLocation: index == navigationShell.currentIndex,
           );
         },
-        backgroundColor: AppTheme.surfaceColor,
-        indicatorColor: AppTheme.secondaryColor.withOpacity(0.4),
+        backgroundColor: theme.colorScheme.surface,
+        indicatorColor: AppTheme.primaryEmerald.withOpacity(0.1),
         labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+        elevation: 0,
         destinations: const [
           NavigationDestination(
-            icon: Icon(Icons.kitchen_outlined),
-            selectedIcon: Icon(Icons.kitchen, color: AppTheme.primaryColor),
+            icon: Icon(LucideIcons.home, size: 22),
+            selectedIcon: Icon(LucideIcons.home, color: AppTheme.primaryEmerald, size: 22),
             label: 'Pantry',
           ),
           NavigationDestination(
-            icon: Icon(Icons.shopping_cart_outlined),
-            selectedIcon: Icon(Icons.shopping_cart, color: AppTheme.primaryColor),
+            icon: Icon(LucideIcons.shoppingCart, size: 22),
+            selectedIcon: Icon(LucideIcons.shoppingCart, color: AppTheme.primaryEmerald, size: 22),
             label: 'Shopping',
           ),
           NavigationDestination(
-            icon: Icon(Icons.family_restroom_outlined),
-            selectedIcon: Icon(Icons.family_restroom, color: AppTheme.primaryColor),
+            icon: Icon(LucideIcons.users, size: 22),
+            selectedIcon: Icon(LucideIcons.users, color: AppTheme.primaryEmerald, size: 22),
             label: 'Family',
           ),
           NavigationDestination(
-            icon: Icon(Icons.settings_outlined),
-            selectedIcon: Icon(Icons.settings, color: AppTheme.primaryColor),
+            icon: Icon(LucideIcons.settings, size: 22),
+            selectedIcon: Icon(LucideIcons.settings, color: AppTheme.primaryEmerald, size: 22),
             label: 'Settings',
           ),
         ],

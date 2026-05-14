@@ -2,6 +2,12 @@
 // Features copyWith for immutable updates and helper get/is properties for business logic.
 // Includes toMap/fromMap serialization ready for future Firebase Cloud Firestore integration.
 
+enum StockStatus {
+  enough,
+  low,
+  finished,
+}
+
 class PantryItem {
   final String id;
   final String name;
@@ -9,7 +15,10 @@ class PantryItem {
   final double quantity;
   final String unit;
   final double lowStockThreshold;
+  final StockStatus stockStatus;
+  final DateTime createdAt;
   final DateTime updatedAt;
+  final bool isRecurring;
 
   const PantryItem({
     required this.id,
@@ -18,11 +27,17 @@ class PantryItem {
     required this.quantity,
     required this.unit,
     required this.lowStockThreshold,
+    required this.stockStatus,
+    required this.createdAt,
     required this.updatedAt,
+    required this.isRecurring,
   });
 
-  // Helper property to compute if an item is running low
-  bool get isLowStock => quantity <= lowStockThreshold;
+  // Helper property to compute if an item is running low based on threshold or status
+  bool get isLowStock =>
+      quantity <= lowStockThreshold ||
+      stockStatus == StockStatus.low ||
+      stockStatus == StockStatus.finished;
 
   PantryItem copyWith({
     String? id,
@@ -31,7 +46,10 @@ class PantryItem {
     double? quantity,
     String? unit,
     double? lowStockThreshold,
+    StockStatus? stockStatus,
+    DateTime? createdAt,
     DateTime? updatedAt,
+    bool? isRecurring,
   }) {
     return PantryItem(
       id: id ?? this.id,
@@ -40,7 +58,10 @@ class PantryItem {
       quantity: quantity ?? this.quantity,
       unit: unit ?? this.unit,
       lowStockThreshold: lowStockThreshold ?? this.lowStockThreshold,
+      stockStatus: stockStatus ?? this.stockStatus,
+      createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
+      isRecurring: isRecurring ?? this.isRecurring,
     );
   }
 
@@ -53,8 +74,10 @@ class PantryItem {
       'quantity': quantity,
       'unit': unit,
       'lowStockThreshold': lowStockThreshold,
-      // Firestore timestamps are typically saved as millisecondsSinceEpoch or FieldValue.serverTimestamp()
+      'stockStatus': stockStatus.name,
+      'createdAt': createdAt.millisecondsSinceEpoch,
       'updatedAt': updatedAt.millisecondsSinceEpoch,
+      'isRecurring': isRecurring,
     };
   }
 
@@ -66,9 +89,17 @@ class PantryItem {
       quantity: (map['quantity'] as num?)?.toDouble() ?? 0.0,
       unit: map['unit'] as String? ?? 'pcs',
       lowStockThreshold: (map['lowStockThreshold'] as num?)?.toDouble() ?? 1.0,
+      stockStatus: StockStatus.values.firstWhere(
+        (e) => e.name == map['stockStatus'],
+        orElse: () => StockStatus.enough,
+      ),
+      createdAt: map['createdAt'] != null
+          ? DateTime.fromMillisecondsSinceEpoch(map['createdAt'] as int)
+          : DateTime.now(),
       updatedAt: map['updatedAt'] != null
           ? DateTime.fromMillisecondsSinceEpoch(map['updatedAt'] as int)
           : DateTime.now(),
+      isRecurring: map['isRecurring'] as bool? ?? false,
     );
   }
 }

@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons/lucide_icons.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/theme/app_theme.dart';
-
-// ARCHITECTURE DECISION: Centralized control view. Prepares easy hooks for multilingual support,
-// notification options, and future Firebase Authentication sign-out flows.
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -18,72 +17,93 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Settings'),
       ),
       body: ListView(
-        padding: const EdgeInsets.all(AppConstants.paddingMedium),
+        padding: const EdgeInsets.all(16),
         children: [
-          // Section: Language / Multilingual Setup
-          const Padding(
-            padding: EdgeInsets.symmetric(vertical: 8.0),
-            child: Text(
-              'Language & Localization',
-              style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: AppTheme.primaryColor),
+          // Profile Section
+          _buildSectionHeader(theme, 'Account'),
+          Card(
+            child: ListTile(
+              leading: const Icon(LucideIcons.user, color: AppTheme.primaryEmerald),
+              title: const Text('Profile Settings', style: TextStyle(fontWeight: FontWeight.w600)),
+              subtitle: const Text('Manage your account and preferences'),
+              trailing: const Icon(LucideIcons.chevronRight, size: 16),
+              onTap: () => context.push('/profile'),
             ),
           ),
-          ListTile(
-            leading: const Icon(Icons.language),
-            title: const Text('App Language', style: TextStyle(fontSize: 18)),
-            subtitle: Text(_selectedLanguage),
-            trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-            onTap: () => _showLanguageSelection(context),
+          
+          const SizedBox(height: 24),
+          
+          // Language Section
+          _buildSectionHeader(theme, 'Localization'),
+          Card(
+            child: ListTile(
+              leading: const Icon(LucideIcons.languages, color: AppTheme.primaryEmerald),
+              title: const Text('App Language', style: TextStyle(fontWeight: FontWeight.w600)),
+              subtitle: Text(_selectedLanguage),
+              trailing: const Icon(LucideIcons.chevronRight, size: 16),
+              onTap: () => _showLanguageSelection(context),
+            ),
           ),
-          const Divider(),
+          
+          const SizedBox(height: 24),
 
-          // Section: Notifications
-          const Padding(
-            padding: EdgeInsets.symmetric(vertical: 8.0),
-            child: Text(
-              'Alerts',
-              style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: AppTheme.primaryColor),
+          // Notifications Section
+          _buildSectionHeader(theme, 'Alerts & Notifications'),
+          Card(
+            child: SwitchListTile(
+              secondary: const Icon(LucideIcons.bell, color: AppTheme.primaryEmerald),
+              title: const Text('Low Stock Alerts', style: TextStyle(fontWeight: FontWeight.w600)),
+              subtitle: const Text('Notify when pantry items reach critical thresholds'),
+              value: _notificationsEnabled,
+              activeColor: AppTheme.primaryEmerald,
+              onChanged: (val) => setState(() => _notificationsEnabled = val),
             ),
           ),
-          SwitchListTile(
-            secondary: const Icon(Icons.notifications_active),
-            title: const Text('Low Stock Alerts', style: TextStyle(fontSize: 18)),
-            subtitle: const Text('Notify when pantry items reach critical thresholds'),
-            value: _notificationsEnabled,
-            activeColor: AppTheme.primaryColor,
-            onChanged: (val) {
-              setState(() {
-                _notificationsEnabled = val;
-              });
-            },
-          ),
-          const Divider(),
+          
+          const SizedBox(height: 24),
 
-          // Section: Account / Firebase Auth placeholder
-          const Padding(
-            padding: EdgeInsets.symmetric(vertical: 8.0),
-            child: Text(
-              'Account',
-              style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: AppTheme.primaryColor),
+          // About Section
+          _buildSectionHeader(theme, 'About'),
+          Card(
+            child: Column(
+              children: [
+                ListTile(
+                  leading: const Icon(LucideIcons.info, color: AppTheme.primaryEmerald),
+                  title: const Text('App Version', style: TextStyle(fontWeight: FontWeight.w600)),
+                  trailing: Text('1.0.0', style: TextStyle(color: theme.colorScheme.onSurface.withOpacity(0.5))),
+                ),
+                const Divider(height: 1),
+                ListTile(
+                  leading: const Icon(LucideIcons.helpCircle, color: AppTheme.primaryEmerald),
+                  title: const Text('Help & Support', style: TextStyle(fontWeight: FontWeight.w600)),
+                  trailing: const Icon(LucideIcons.externalLink, size: 14),
+                  onTap: () {},
+                ),
+              ],
             ),
-          ),
-          ListTile(
-            leading: const Icon(Icons.security),
-            title: const Text('Firebase Authentication', style: TextStyle(fontSize: 18)),
-            subtitle: const Text('Ready for production account configuration'),
-            trailing: const Icon(Icons.check_circle, color: AppTheme.primaryColor),
-            onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Firebase Auth ready configuration setup.')),
-              );
-            },
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildSectionHeader(ThemeData theme, String title) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 4, bottom: 8),
+      child: Text(
+        title.toUpperCase(),
+        style: theme.textTheme.labelLarge?.copyWith(
+          color: theme.colorScheme.primary,
+          fontWeight: FontWeight.bold,
+          letterSpacing: 1.1,
+        ),
       ),
     );
   }
@@ -93,33 +113,33 @@ class _SettingsScreenState extends State<SettingsScreen> {
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (context) {
-        return ListView.builder(
-          shrinkWrap: true,
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          itemCount: languages.length,
-          itemBuilder: (context, index) {
-            final lang = languages[index];
-            return ListTile(
-              title: Text(
-                lang,
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: lang == _selectedLanguage ? FontWeight.bold : FontWeight.normal,
-                  color: lang == _selectedLanguage ? AppTheme.primaryColor : Colors.black87,
+        return Container(
+          padding: const EdgeInsets.symmetric(vertical: 20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('Select Language', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+              const SizedBox(height: 16),
+              ...languages.map((lang) => ListTile(
+                title: Text(
+                  lang,
+                  style: TextStyle(
+                    fontWeight: lang == _selectedLanguage ? FontWeight.bold : FontWeight.normal,
+                    color: lang == _selectedLanguage ? AppTheme.primaryEmerald : null,
+                  ),
                 ),
-              ),
-              trailing: lang == _selectedLanguage ? const Icon(Icons.check, color: AppTheme.primaryColor) : null,
-              onTap: () {
-                setState(() {
-                  _selectedLanguage = lang;
-                });
-                Navigator.pop(context);
-              },
-            );
-          },
+                trailing: lang == _selectedLanguage ? const Icon(LucideIcons.check, color: AppTheme.primaryEmerald) : null,
+                onTap: () {
+                  setState(() => _selectedLanguage = lang);
+                  Navigator.pop(context);
+                },
+              )),
+              const SizedBox(height: 12),
+            ],
+          ),
         );
       },
     );

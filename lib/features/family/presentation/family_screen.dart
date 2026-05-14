@@ -30,7 +30,7 @@ class FamilyScreen extends StatelessWidget {
               const SizedBox(height: 12),
               const Text(
                 'Invite members to your household to automatically sync pantry changes, shopping lists, and live status across all mobile devices using Cloud Firestore.',
-                style: TextStyle(fontSize: 16, color: Colors.black64),
+                style: TextStyle(fontSize: 16, color: Colors.black54),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 32),

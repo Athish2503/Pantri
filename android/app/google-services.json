@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "64997792231",
+    "project_id": "pantri-6c104",
+    "storage_bucket": "pantri-6c104.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:64997792231:android:8339bfa40bc48c7ba64542",
+        "android_client_info": {
+          "package_name": "com.example.pantri"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAj7ZdNRsQKbVhF6LM6o1K5roWkyf1qBc4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
